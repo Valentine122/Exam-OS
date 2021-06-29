@@ -1,14 +1,15 @@
-### SSH key-only connection
+#Exam-OS
+Підключення лише за допомогою ключа SSH
 
-`ssh-keygen` - Generate keys for both server and client.
+`ssh-keygen` -- Створення ключів як для сервера, так і для клієнта.
 
-`ssh-copy-id server@192.168.32.129` - Copy key files from client to server, knowing server's password (example).
+`ssh-copy-id server@192.168.32.129` - Скопіюйте ключові файли з клієнта на сервер, знаючи пароль сервера (приклад).
 
-`ssh server@192.168.32.129` - Connect with keys only (example).
+`ssh server@192.168.32.129` - Підключення лише за допомогою клавіш (приклад).
 
-### Creating daemon which runs shell script using timer
+### Створення даемона, який запускає сценарій оболонки за допомогою таймера
 
-To run script each 10 second, for example, we need to create service and timer for it.
+Наприклад, щоб запускати сценарій кожні 10 секунд, нам потрібно створити службу та таймер для нього.
 
 __/etc/systemd/system/logger-exam.service__:
 ```Shell
@@ -44,11 +45,11 @@ __shell-script.sh__:
 echo "Here I am" >> /home/server/logs
 ```
 
-To enable executing system daemon, we need to execute: `systemctl start logger-exam.timer` (in this example).
+Щоб увімкнути виконання системного демона, нам потрібно виконати: `systemctl start logger-exam.timer` (у цьому прикладі).
 
-### Modification in Java app to enable healthcheck endpoint
+### Модифікація в програмі Java для включення кінцевої точки Healthcheck
 
-We need to add separate controller class to represent our __/healthcheck__ endpoint:
+Нам потрібно додати окремий клас контролера для представлення нашої кінцевої точки / healthcheck :
 
 ```Java
 package com.pazyniuk.controller;
@@ -67,11 +68,11 @@ public class HealthController {
 }
 ```
 
-Reference [here](https://github.com/damoklov/spring-jpa-iot/blob/docker-one-container/src/main/java/com/pazyniuk/controller/HealthController.java).
+### Включіть опцію перевірки працездатності для складання докера
 
-### Include healthcheck option to docker-compose
+Нам потрібно додати позицію перевірки стану здоров’я до нашого файлу docker-compose.yml:
 
-We need to add __healthcheck__ position to our docker-compose.yml file:
+healthcheck: 
 ```Dockerfile
 healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/healthcheck"]
@@ -81,34 +82,12 @@ healthcheck:
       start_period: 60s
 ```
 
-Later, we are able to run `docker inspect <container-id>` to check health of our container.
+Пізніше ми можемо запустити `docker inspect <container-id>` перевірку працездатності нашого контейнера.
 
-### Docker container
+### Докер-контейнер
 
-To run Java application and MySQL service in one container I used Ubuntu 18.04 image and modified my [Dockerfile](https://github.com/damoklov/operation-systems/blob/master/docker-compose-exam/Dockerfile).
+Щоб запустити контейнер: `docker-compose build --no-cache` and `docker-compose up`.
 
-Also, you can find my wrapper script and docker-compose files [here](https://github.com/damoklov/operation-systems/tree/master/docker-compose-exam).
+Для підключення до оболонки контейнера: `docker exec -it <container-id> /bin/bash`.
 
-To run a container: `docker-compose build --no-cache` and `docker-compose up`.
-
-To connect to shell of the container: `docker exec -it <container-id> /bin/bash`.
-
-To copy file from container to host: `docker cp <containerId>:/file/path/within/container /host/path/target`.
-
-### Helpful articles
-
-[Systemd timer usage](https://opensource.com/article/20/7/systemd-timers)
-
-[Systemd timer time spans](https://www.freedesktop.org/software/systemd/man/systemd.time.html)
-
-[Copying container files thread](https://stackoverflow.com/questions/22049212/docker-copying-files-from-docker-container-to-host)
-
-[Connecting to container via shell](https://phase2.github.io/devtools/common-tasks/ssh-into-a-container/)
-
-[Docker healthcheck article (RU)](https://dotsandbrackets.com/docker-health-check-ru/)
-
-[SSH key-only connection (RU)](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server-ru)
-
-[Dockerfile healthcheck docs](https://docs.docker.com/engine/reference/builder/#healthcheck)
-
-[Docker-compose docs](https://docs.docker.com/compose/compose-file/compose-file-v3/)
+Для того, щоб скопіювати файл з контейнера хоста: `docker cp <containerId>:/file/path/within/container /host/path/target`.
